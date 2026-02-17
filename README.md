@@ -1,65 +1,77 @@
 # Yehonatan Ohana
 # Moveo DevOps Home Assignment
 
+---
+
 ## Deployed URL
 http://task-alb-465263923.us-east-1.elb.amazonaws.com
 
-Expected response:
+### Expected Response
 yo this is nginx
-
-
-
 
 ---
 
 ## Overview
-This project provisions an AWS environment with an internet-facing Application Load Balancer (ALB) that forwards traffic to an EC2 instance running Dockerized NGINX in a private subnet.
+This project provisions an AWS infrastructure using Terraform.
+It deploys an internet-facing Application Load Balancer (ALB) that routes HTTP traffic to an EC2 instance located in a private subnet.
+The EC2 instance runs Docker with an NGINX container serving a custom index page.
 
 ---
 
 ## Architecture
-- Internet → **ALB (public subnets)**
-- ALB → **Target Group**
-- Target Group → **EC2 (private subnet)** running **Docker + NGINX**
-- Private subnet egress via **NAT Gateway**
-- Public subnets connected via **Internet Gateway**
+- Internet → ALB (public subnets)
+- ALB → Target Group
+- Target Group → EC2 (private subnet) running Docker + NGINX
+- Private subnet outbound traffic via NAT Gateway
+- Public subnets connected to Internet Gateway
 
-### Diagram (Mermaid)
-```mermaid
-flowchart LR
-  U[User / Browser] --> ALB[ALB - Public Subnets]
-  ALB --> TG[Target Group]
-  TG --> EC2[EC2 - Private Subnet]
-  EC2 --> D[Docker Container: NGINX]
-  EC2 --> NAT[NAT Gateway]
-  NAT --> IGW[Internet Gateway]
+---
 
+## Prerequisites
+- AWS Account
+- Terraform installed
+- AWS CLI configured (aws configure)
+- Region: us-east-1
 
+---
 
+## Deployment Instructions
+
+Format Terraform files:
 terraform fmt -recursive
+
+Initialize Terraform:
 terraform init
+
+Review execution plan:
 terraform plan
+
+Apply infrastructure:
 terraform apply
 
-#HOW TO TEST
+Get ALB URL:
+terraform output alb_dns_name
+
+---
+
+## How to Test
+
 curl http://task-alb-465263923.us-east-1.elb.amazonaws.com
 
-#EXPECTED OUTPUT
-yo thus is nginx
+Expected output:
+yo this is nginx
 
-#CLEANUP
+---
+
+## Cleanup
+
 terraform destroy
 
-Security Notes
+---
 
--EC2 instance is placed in a private subnet (not directly exposed to the internet).
-
--Only the ALB is public-facing.
-
--Security Groups allow inbound HTTP to the ALB and allow ALB-to-EC2 traffic.
-
--Outbound internet access for the private subnet is done via NAT Gateway (for updates/pulling images if needed).
-
-
-
+## Security Notes
+- EC2 instance is deployed in a private subnet (not publicly accessible).
+- Only the Application Load Balancer is internet-facing.
+- Security Groups restrict traffic to necessary ports only.
+- Outbound internet access for the EC2 instance is provided via NAT Gateway.
 

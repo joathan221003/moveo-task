@@ -36,7 +36,6 @@ flowchart LR
 
 
 
-###HOW TO RUN  
 terraform fmt -recursive
 terraform init
 terraform plan
